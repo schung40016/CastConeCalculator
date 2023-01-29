@@ -1,13 +1,20 @@
 #pragma once
 
+#define _USE_MATH_DEFINES
+
+#include <iostream>
 #include <vector>
+#include <cmath>
 #include "eucVector.h"
 
 class CastConeCalculator
 {
 private:
-    float arc = 0.0f;
-    float range = 0.0f;
+    double arc = 0.0f;
+    double range = 0.0f;
 
-    bool InLineOfSight(std::vector<int> caster, float casterDirection, std::vector<int> target);
+public:
+    CastConeCalculator(double arc, double range);
+
+    bool InLineOfSightArc(std::vector<int> caster, int casterDirection, std::vector<int> target);
 };
