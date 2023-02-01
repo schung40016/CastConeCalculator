@@ -16,9 +16,13 @@ private:
 public:
     CastConeCalculator(double arc, double range);
 
-    bool InLineOfSightArc(std::vector<int> caster, int casterDirection, std::vector<int> target);
+    bool InLineOfSightArc(std::vector<double> caster, int casterDirection, std::vector<double> target);
 
-    bool InLineOfSightLine(std::vector<int> caster, int casterDirection, std::vector<int> target);
+    bool InLineOfSightLine(std::vector<double> caster, int casterDirection, std::vector<double> target);
+
+    bool CheckIfWithinArc(double limit, double magnitude);
+
+    double CalcLineConst(std::vector<double> point1, std::vector<double> point2);
 
     double CalcThreshold();
 
