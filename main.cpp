@@ -5,8 +5,8 @@
 int main()
 {
     std::vector<double> casterPos = {0, 0};
-    std::vector<double> targetPos = {5, 5};
-    double directionAngle = 0.0;
+    std::vector<double> targetPos = {4, 4};
+    double directionAngle = 45.0;
     double arc = 0.0;
     double range = 10.0;
 
@@ -17,7 +17,8 @@ int main()
 
     CastConeCalculator castConeCalculator(arc, range);
 
-    std::cout << castConeCalculator.InLineOfSightArc(casterPos, directionAngle, targetPos);
+    std::cout << castConeCalculator.InLineOfSightArc(casterPos, directionAngle, targetPos) << std::endl;
+    std::cout << castConeCalculator.InLineOfSightLine(casterPos, directionAngle, targetPos) << std::endl;
 
     return 0;
 };

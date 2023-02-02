@@ -9,7 +9,7 @@ EucVector::EucVector(double x1, double y1)
 // Getters and Setters
 double EucVector::GetMagnitude() 
 {
-    this->magnitude = sqrt(pow((values[1]), 2) + pow((values[0]),2));
+    this->magnitude = sqrt(pow((values[1]), 2) + pow((values[0]), 2));
 
     return magnitude;
 }
