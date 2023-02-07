@@ -30,8 +30,12 @@ bool CastConeCalculator::InLineOfSightLine(std::vector<double> caster, double ca
     //TO-DO:
     // Define the two points that make the base of the cone.
     double adjustedArc = this->arc / 2.0;
-    std::vector<double> point1 = { range * GetCosFromDeg(casterDirection + adjustedArc), range * GetSinFromDeg(casterDirection + adjustedArc)};
-    std::vector<double> point2 = { range * GetCosFromDeg(casterDirection - adjustedArc), range * GetSinFromDeg(casterDirection - adjustedArc)};
+
+    double positiveSide = casterDirection + adjustedArc;
+    double negativeSide = casterDirection - adjustedArc;
+
+    std::vector<double> point1 = { range * GetCosFromDeg(positiveSide), range * GetSinFromDeg(positiveSide)};
+    std::vector<double> point2 = { range * GetCosFromDeg(negativeSide), range * GetSinFromDeg(negativeSide)};
 
     // Calculate the slope for our two vectors, we can use this to create a linear function. 
     double boundLine = CalcLineConst(point1, point2);
@@ -63,6 +67,7 @@ bool CastConeCalculator::CheckIfWithinArc(double limit, double magnitude)
 
 double CastConeCalculator::CalcLineConst(std::vector<double> point1, std::vector<double> point2)
 {
+    // Swap points depending on which x value is lower. 
     if (point1[0] > point2[1])
     {
         std::vector<double> temp = {};
@@ -78,11 +83,11 @@ double CastConeCalculator::CalcLineConst(std::vector<double> point1, std::vector
 double CastConeCalculator::CalcNormDotProduct(EucVector casterToTarget, EucVector casterToAim)
 {
     //Figure out the degree between out two vectors. Formula: a . b / |a||b|
-    double degree = (casterToAim.GetValues()[0] * casterToTarget.GetValues()[0] + casterToAim.GetValues()[1] * casterToTarget.GetValues()[1]) 
+    double dotProd = (casterToAim.GetValues()[0] * casterToTarget.GetValues()[0] + casterToAim.GetValues()[1] * casterToTarget.GetValues()[1]) 
                     / (casterToTarget.GetMagnitude() * casterToAim.GetMagnitude());
 
     // Note: if the ot product of 2 normalzied vectors = 1 (they're facing each other).
-    return GetCosFromDeg(degree);
+    return dotProd;
 }
 
 double CastConeCalculator::GetCosFromDeg(double degree)
