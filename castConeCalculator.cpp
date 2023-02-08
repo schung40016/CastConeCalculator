@@ -17,7 +17,7 @@ bool CastConeCalculator::InLineOfSightArc(std::vector<double> caster, double cas
     double dotProduct = CalcNormDotProduct(casterToTarget, casterToAim);
 
     // Check if our target is within the cone.  
-    return CheckIfWithinArc((this->threshold + dotProduct), casterToTarget.GetMagnitude());
+    return CheckIfWithinArc((this->threshold + dotProduct), casterToTarget.GetMagnitude(), this->range);
 }
 
 // Checks if the target is in the line of sight based on a line.
@@ -27,35 +27,32 @@ bool CastConeCalculator::InLineOfSightLine(std::vector<double> caster, double ca
 
     EucVector casterToAim((range * GetCosFromDeg(casterDirection)), (range * GetSinFromDeg(casterDirection))); 
 
-    //TO-DO:
-    // Define the two points that make the base of the cone.
     double adjustedArc = this->arc / 2.0;
 
     double positiveSide = casterDirection + adjustedArc;
     double negativeSide = casterDirection - adjustedArc;
 
-    std::vector<double> point1 = { range * GetCosFromDeg(positiveSide), range * GetSinFromDeg(positiveSide)};
-    std::vector<double> point2 = { range * GetCosFromDeg(negativeSide), range * GetSinFromDeg(negativeSide)};
+    std::vector<double> point1 = { range * GetCosFromDeg(positiveSide) + caster[0], range * GetSinFromDeg(positiveSide) + caster[1]};
+    std::vector<double> point2 = { range * GetCosFromDeg(negativeSide) + caster[0], range * GetSinFromDeg(negativeSide) + caster[1]};
 
     // Calculate the slope for our two vectors, we can use this to create a linear function. 
-    double boundLine = CalcLineConst(point1, point2);
-    double casterLine = CalcLineConst(caster, target);
+    std::vector<double> boundLine = CalcLineForm(point1, point2);
+    std::vector<double> casterLine = CalcLineForm(caster, target);
     
-    // Find where the cast line intersects with the bound line.
-    double xIntercept = sqrt(casterLine * (1.0 / casterLine));
-    double yIntercept = casterLine * xIntercept;
+    // Find the x and y values for where the two lines intersect.
+    std::vector<double> intercepts = CalcIntersectPoint(boundLine, casterLine);
 
-    EucVector casterToBound(xIntercept - caster[0], yIntercept - caster[1]);
+    EucVector casterToBound(intercepts[0] - caster[0], intercepts[1] - caster[1]);
 
     double dotProduct = CalcNormDotProduct(casterToTarget, casterToAim);
 
     // Check if our target is within the cone.  
-    return CheckIfWithinArc((this->threshold + dotProduct), casterToBound.GetMagnitude());
+    return CheckIfWithinArc((this->threshold + dotProduct), casterToTarget.GetMagnitude(), casterToBound.GetMagnitude());
 }    
 
-bool CastConeCalculator::CheckIfWithinArc(double limit, double magnitude)
+bool CastConeCalculator::CheckIfWithinArc(double dotLimit, double magnitude, double rangeLimit)
 {
-    if (limit >= 1 && this->range >= magnitude)
+    if (dotLimit >= 1 && rangeLimit >= magnitude)
     {
         return true;
     }
@@ -65,7 +62,7 @@ bool CastConeCalculator::CheckIfWithinArc(double limit, double magnitude)
     }
 }
 
-double CastConeCalculator::CalcLineConst(std::vector<double> point1, std::vector<double> point2)
+std::vector<double> CastConeCalculator::CalcLineForm(std::vector<double> point1, std::vector<double> point2)
 {
     // Swap points depending on which x value is lower. 
     if (point1[0] > point2[1])
@@ -77,7 +74,12 @@ double CastConeCalculator::CalcLineConst(std::vector<double> point1, std::vector
     }
 
     // Define a line based on the two points.
-    return (point2[1] - point1[1]) / (point2[0] - point1[1]);
+    double slope = (point2[1] - point1[1]) / (point2[0] - point1[0]);
+
+    // Calculate the y-intercept.
+    double yInt = point1[1] - (point1[0] * slope);
+
+    return {slope, yInt};
 }
 
 double CastConeCalculator::CalcNormDotProduct(EucVector casterToTarget, EucVector casterToAim)
@@ -88,6 +90,14 @@ double CastConeCalculator::CalcNormDotProduct(EucVector casterToTarget, EucVecto
 
     // Note: if the ot product of 2 normalzied vectors = 1 (they're facing each other).
     return dotProd;
+}
+
+std::vector<double> CastConeCalculator::CalcIntersectPoint(std::vector<double> line1, std::vector<double> line2)
+{
+    double xIntercept =  (line2[1] - line1[1]) / (line1[0] - line2[0]);
+    double yIntercept = line2[1] + (line2[0] * xIntercept);
+
+    return {xIntercept, yIntercept};
 }
 
 double CastConeCalculator::GetCosFromDeg(double degree)

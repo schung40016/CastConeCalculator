@@ -21,11 +21,13 @@ public:
 
     bool InLineOfSightLine(std::vector<double> caster, double casterDirection, std::vector<double> target);
 
-    bool CheckIfWithinArc(double limit, double magnitude);
+    bool CheckIfWithinArc(double dotLimit, double magnitude, double rangeLimit);
 
-    double CalcLineConst(std::vector<double> point1, std::vector<double> point2);
+    std::vector<double> CalcLineForm(std::vector<double> point1, std::vector<double> point2);
 
     double CalcNormDotProduct(EucVector CasterToTarget, EucVector CasterToAim);
+
+    std::vector<double> CalcIntersectPoint(std::vector<double> line1, std::vector<double> line2);
 
     double GetCosFromDeg(double degree);
 

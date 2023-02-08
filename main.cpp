@@ -5,7 +5,7 @@
 int main()
 {
     std::vector<double> casterPos = {0, 0};
-    std::vector<double> targetPos = {-5, -1};
+    std::vector<double> targetPos = {3, 3};
     double directionAngle = 45.0;
     double arc = 0.0;
     double range = 10.0;
